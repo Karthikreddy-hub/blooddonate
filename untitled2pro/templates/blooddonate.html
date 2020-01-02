@@ -1,0 +1,19 @@
+{% extends 'home.html' %}
+<html>
+<head>
+    <title>Blood Donator</title>
+</head>
+<body>
+{% block content %}
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {{ dform.as_p }}
+        <center>
+            <input type="submit" value="Submit">
+        </center>
+    </form>
+</div>
+{% endblock %}
+</body>
+</html>

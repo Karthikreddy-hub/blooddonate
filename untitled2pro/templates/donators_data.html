@@ -1,0 +1,53 @@
+
+<html>
+<head>
+    <title>BLood Donators List</title>
+</head>
+<body>
+<style>
+    body{
+        background: aliceblue;
+    }
+    .text-center{
+        background: aquamarine;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    th, td{
+        padding: 20px 30px;
+        text-align: center;
+        background: lavender;
+    }
+</style>
+{% if data %}
+    <h2 class="text-center">Your Donators are</h2>
+    <center>
+        <table border="2px">
+            <thead>
+            <tr>
+            <th>NAME</th>
+            <th>MOBILE</th>
+            <th>LOCATION</th>
+            <th>EMAIL</th>
+            <th>BLOOD GROUP</th>
+            </tr>
+            </thead>
+            {%  for i in data %}
+                <tbody>
+                <tr>
+                    <td>{{ i.name }}</td>
+                    <td>{{ i.mobile}}</td>
+                    <td>{{ i.location }}</td>
+                    <td>{{ i.email }}</td>
+                    <td>{{ i.bloodgroups }}</td>
+                </tr>
+                </tbody>
+            {% endfor %}
+        </table>
+    </center>
+{% else %}
+    <h2> You have not any donators</h2>
+{% endif %}
+</body>
+</html>

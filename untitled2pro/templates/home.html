@@ -1,0 +1,25 @@
+{% load staticfiles %}
+<html>
+<head>
+    <title>DONATE BLOOD SAVE LIFE</title>
+    <link href="{% static 'css/home.css' %}" rel="stylesheet">
+</head>
+<body>
+<marquee width="1000" scrollamount="100" scrolldelay="500" loop="?">ONLINE BLOOD DONATION</marquee>
+<header>
+    <ul>
+        <li class="active"><a href="/register/">Register</a> </li>
+        <li><a href="/login/">Login</a> </li>
+        <li><a href="/contact/">Contact</a> </li>
+    </ul>
+</header>
+<main>
+{% block content %}
+
+{% endblock %}
+</main>
+<footer>
+        <h5 id="footer">&copy; COPYRIGHTS BY KARTHIK REDDY</h5>
+</footer>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% extends 'home.html' %}
+<html>
+<head>
+    <title>Register Form</title>
+</head>
+<body>
+{% block content %}
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% if error_msg %}
+                        <p class="bg-danger p-d ml-b">{{ error_msg }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group clearfix">
+                    <label for="{{ form.username.id_for_label }}" class="col-md-4 control-label text-right">Username<span class="text-red">*</span>:</label>
+                        {{ form.username }}
+                </div>
+                <div class="form-group clearfix">
+                    <label for="{{ form.email.id_for_label }}" class="col-md-4 control-label text-right">Email<span class="text-red">*</span>:</label>
+                        {{ form.email }}
+                </div>
+                <div class="form-group clearfix">
+                    <label for="{{ form.password1.id_for_label }}" class="col-md-4 control-label text-right">Password<span class="text-red">*</span>:</label>
+                        {{ form.password1 }}
+                </div>
+                <div class="form-group clearfix">
+                    <label for="{{ form.password2.id_for_label }}" class="col-md-4 control-label text-right">Confirm password:</label>
+                        {{ form.password2 }}
+                </div>
+                <div class="form-group clearfix">
+                    <label for="{{ form.first_name.id_for_label }}" class="col-md-4 control-label text-right">First Name:</label>
+                        {{ form.first_name }}
+                </div>
+                <div class="form-group clearfix">
+                    <label for="{{ form.last_name.id_for_label }}" class="col-md-4 control-label text-right">Last Name:</label>
+                        {{ form.last_name }}
+                </div>
+                <div class="form-group clearfix">
+                    <label for="{{ form.mobile.id_for_label }}" class="col-md-4 control-label text-right">Phone Number:</label>
+                        {{ form.mobile }}
+                </div>
+                <div class="col-md-6 col-md-offset-4">
+                    <input type="submit" value="Register" class="btn btn-success">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends 'home.html' %}
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-offset-2 col-md-6">
+            <form method="post">
+                {% csrf_token %}
+                {{ lform.as_p }}
+                
+                <center>
+                    <input type="submit" value="Login" class="btn btn-success"><br>
+                    <a href="/register/">New User?</a>
+                </center>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>
