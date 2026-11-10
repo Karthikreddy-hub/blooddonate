@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#991b1b">
+  <meta name="description" content="Give blood. Give hope. Connect blood donors with people in need.">
+  <title>{% block title %}LifeLine · Blood Donation{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+<nav class="nav">
+  <a class="brand" href="{% url 'home' %}"><span class="brand-mark">♥</span><span>LifeLine<small> BLOOD DONATION NETWORK</small></span></a>
+  <div class="nav-links">
+    <a href="{% url 'home' %}">Home</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'choose' %}">Dashboard</a><a href="{% url 'donators' %}">Find donors</a>
+      <a href="{% url 'contact' %}">Contact</a>
+      <a class="nav-cta" href="{% url 'logout' %}">Sign out</a>
+    {% else %}
+      <a href="{% url 'contact' %}">Contact</a><a href="{% url 'login' %}">Sign in</a>
+      <a class="nav-cta" href="{% url 'register' %}">Become a member</a>
+    {% endif %}
+  </div>
+</nav>
+<main>
+  {% if messages %}<div class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer><span>♥ LifeLine</span><span>Every drop counts. Every donor matters.</span><span>© {% now "Y" %}</span></footer>
+</body>
+</html>
