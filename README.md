@@ -1,78 +1,98 @@
 # LifeLine — Blood Donation Network
 
-A Django-based blood donor community application modernized for container deployment.
+A refreshed blood donor directory built with Flask, SQLAlchemy and PostgreSQL. The old Django project and ambiguous `untitled2pro` folder are replaced by a clearly named `backend/` application.
 
 ## Architecture
 
-This repository currently contains **one Django web application**, not independently deployable Python microservices. Docker Compose runs:
-- `web`: Django served by Gunicorn (port 8000)
-- `db`: PostgreSQL 16 with persistent storage
+This is intentionally a **modular monolith**, not a collection of artificial microservices:
+- **web** — Flask 3.1 application served by Gunicorn.
+- **db** — PostgreSQL 17 using the official upstream image.
 
-The app container has its own Dockerfile at `untitled2pro/Dockerfile`. PostgreSQL uses the official upstream image.
+Only the application needs a custom Dockerfile. PostgreSQL is already distributed as a maintained container image, so the project uses that image rather than maintaining a custom database image.
 
-## Run locally with Docker
+## Project layout
 
-1. Install Docker Desktop or Docker Engine with the Compose plugin.
-2. From the repository root, create the environment file:
+```text
+blooddonate/
+├── backend/
+│   ├── Dockerfile
+│   ├── entrypoint.sh
+│   ├── requirements.txt
+│   └── lifeline/
+│       ├── __init__.py
+│       ├── config.py
+│       ├── extensions.py
+│       ├── forms.py
+│       ├── models.py
+│       ├── routes.py
+│       ├── static/css/app.css
+│       └── templates/site.html
+├── docker-compose.yml
+├── .env.example
+└── README.md
+```
 
-   ```bash
-   cp untitled2pro/.env.example untitled2pro/.env
-   ```
+## Run with Docker Compose
 
-3. Edit `untitled2pro/.env`. Set a strong, unique `DJANGO_SECRET_KEY` and `POSTGRES_PASSWORD`. For local browser access, the defaults for allowed hosts and CSRF origins are suitable.
-4. Start the stack:
+Requirements: Docker Engine/Desktop and the Docker Compose plugin.
 
-   ```bash
-   docker compose up -d --build
-   ```
+1. Clone the repository and enter its root directory.
+2. Create a local environment file: `cp .env.example .env`.
+3. Edit `.env`. Set a long, unique `FLASK_SECRET_KEY` and a strong `POSTGRES_PASSWORD`.
+4. Build and start: `docker compose up -d --build`.
+5. Check status and logs: `docker compose ps` and `docker compose logs -f web`.
+6. Open [http://localhost:8000](http://localhost:8000).
 
-5. Apply database migrations and collect static assets:
-
-   ```bash
-   docker compose exec web python manage.py migrate
-   docker compose exec web python manage.py collectstatic --noinput
-   ```
-
-6. Create an admin account:
-
-   ```bash
-   docker compose exec web python manage.py createsuperuser
-   ```
-
-7. Visit [http://localhost:8000](http://localhost:8000). Admin: [http://localhost:8000/admin/](http://localhost:8000/admin/). Health: [http://localhost:8000/health/](http://localhost:8000/health/).
+The web container waits for PostgreSQL to become healthy and runs initial table setup before Gunicorn starts. PostgreSQL data is kept in the named `postgres_data` volume.
 
 Useful commands:
 
 ```bash
-docker compose ps
-docker compose logs -f web
+docker compose exec web flask --app lifeline:create_app init-db
+docker compose exec web flask --app lifeline:create_app routes
 docker compose down
-# Preserve data volumes when stopping. To permanently delete DB/uploads/static volumes:
-# docker compose down -v
+# Destructive: removes the database volume and all account/donor data.
+docker compose down -v
 ```
 
-## Application features
+## Run locally
 
-- Account registration and Django session authentication
-- Authenticated donor registration
-- Authenticated searchable donor directory (blood group and location/name)
-- Responsive LifeLine interface
-
-## Important notes
-
-- This is an educational/community demo, not a medical service. Donor eligibility, blood compatibility, availability and identity must be verified by healthcare professionals.
-- Donor contact details are personal data. The directory is restricted to authenticated accounts in this demo; deploy only with appropriate consent, access controls, privacy notice, retention policy and HTTPS.
-- The old SQLite database is not migrated automatically. Back up and migrate any records separately before replacing an existing deployment.
-- The initial project migration contains legacy registration/login tables. The updated application uses Django's built-in User model; the old tables are retained in migration history for safe schema continuity.
-- For production, terminate TLS at a trusted reverse proxy/load balancer, set production host/origin values, rotate secrets, configure backups, and review privacy/legal requirements.
-
-## Development
+Use Python 3.14 and a reachable PostgreSQL instance.
 
 ```bash
-cd untitled2pro
+cd backend
 python -m venv .venv
 # Activate the virtual environment, then:
 pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
 ```
+
+Set the variables from the root `.env.example`, but point `DATABASE_HOST` to your local PostgreSQL server. Then run:
+
+```bash
+flask --app lifeline:create_app init-db
+flask --app lifeline:create_app run --debug
+```
+
+## Features
+
+- Account registration with password hashing and session-based login/logout.
+- Donor profile creation and update.
+- Authenticated donor directory with blood-group and location/name filtering.
+- Donor contact details shown only to signed-in members, and only when the donor explicitly consents.
+- Responsive LifeLine interface with CSRF-protected forms.
+- Database-aware health endpoint at `/health/`.
+
+## Data and privacy notes
+
+- The old Django SQLite database is not automatically migrated. Export and verify records you need **before** replacing an existing deployment.
+- Donor name, phone number and email are personal data. Obtain clear consent, apply a retention policy, use HTTPS, and review applicable privacy requirements before real-world use.
+- This is an educational directory, not a medical service. Blood-bank staff and healthcare professionals must confirm donor eligibility, compatibility and availability.
+- The repository previously tracked a SQLite database. Removing it from the current project tree does not erase it from older Git history. Review that historical file and rewrite repository history if it contains real personal data; coordinate with collaborators first.
+
+## Database migrations
+
+The `init-db` command creates missing tables for a new demo deployment. SQLAlchemy `create_all` does **not** alter existing schemas. Add and review versioned Alembic migrations before changing an established database.
+
+## Production checklist
+
+Replace example secrets and store them in a secrets manager; set `SESSION_COOKIE_SECURE=true` behind HTTPS; terminate TLS at a trusted reverse proxy; configure backups, monitoring, rate limiting, email verification and account recovery; and restrict access to donor contact data.
