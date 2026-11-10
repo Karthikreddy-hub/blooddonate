@@ -37,6 +37,5 @@ class DonorForm(FlaskForm):
     ], validators=[Optional()])
     available = BooleanField("I am currently open to donation requests", default=True)
     consent = BooleanField(
-        "I agree that my name and contact details may be shown to signed-in members of this directory.",
-        validators=[DataRequired(message="Consent is required before your profile can be listed.")],
+        "I agree that my name and contact details may be shown to signed-in members of this directory."
     )
